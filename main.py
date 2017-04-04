@@ -1,5 +1,6 @@
 import webapp2
 import cgi
+import re
 
 page_header = """
 <!DOCTYPE html>
@@ -38,6 +39,8 @@ page_footer = """
 class Index(webapp2.RequestHandler):
     """ Handles requests coming to '/' (root site for signup)"""
     def get(self):
+        username = self.request.get("username")
+        email = self.request.get("email")
         signup_form = """
             <form action = "/welcome" method = "post">
                 <table style="width:100%">
@@ -45,7 +48,7 @@ class Index(webapp2.RequestHandler):
                         <td>
                             <label>
                                 Username:
-                                <input type = "text" name = "username"/>
+                                <input type = "text" name = "username" value="{0}"/>
                             <label>
                         </td>
                     </tr>
@@ -69,7 +72,7 @@ class Index(webapp2.RequestHandler):
                         <td>
                             <label>
                                 Email (Optional):
-                                <input type = "text" name = "email"/>
+                                <input type = "text" name = "email" value="{1}"/>
                             </label>
                         </td>
                     </tr>
@@ -77,13 +80,15 @@ class Index(webapp2.RequestHandler):
                 </table>
                 <input type = "submit"/>
             </form>
-        """
+        """.format(username, email) # value leaves form populated if value exists  .format leaves user submitted values to keep fields populated
         content = page_header + signup_form + page_footer
         self.response.write(content)
 
-
 class Welcome(webapp2.RequestHandler):
     """ Handles requests coming from form """
+    def get(self):
+        username = self.request.get("username")
+        self.response.write("<h1> Welcome, " + username + "! </h1>")
 
     def post(self):
         #retrieve user input
@@ -96,7 +101,10 @@ class Welcome(webapp2.RequestHandler):
         if username == "" or password == "" or verifypassword =="":
             self.redirect("/")
 
-        self.response.write("<h1> Welcome, " + username + "!")
+        else:
+            self.redirect("/welcome?username=" + username)
+
+
 
 app = webapp2.WSGIApplication([
     ('/', Index),
