@@ -1,25 +1,104 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 import webapp2
+import cgi
 
-class MainHandler(webapp2.RequestHandler):
+page_header = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title> User Signup </title>
+
+
+<style>
+h1{
+    font-family: Helvetica;
+    color: #4bdca3;
+}
+form{
+    font-family: Helvetica;
+
+}
+tr, td {
+    padding: 5px;
+    text-align: left;
+}
+table {
+    width: 100%;
+}
+</style>
+</head>
+<body>
+    <h1> Signup </h1>
+"""
+
+page_footer = """
+</body>
+</html>
+"""
+
+class Index(webapp2.RequestHandler):
+    """ Handles requests coming to '/' (root site for signup)"""
     def get(self):
-        self.response.write('Hello world!')
+        signup_form = """
+            <form action = "/welcome" method = "post">
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            <label>
+                                Username:
+                                <input type = "text" name = "username"/>
+                            <label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                                Password:
+                                <input type = "password" name = "password"/>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                                Verify Password:
+                                <input type = "password" name = "verifypassword"/>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                                Email (Optional):
+                                <input type = "text" name = "email"/>
+                            </label>
+                        </td>
+                    </tr>
+
+                </table>
+                <input type = "submit"/>
+            </form>
+        """
+        content = page_header + signup_form + page_footer
+        self.response.write(content)
+
+
+class Welcome(webapp2.RequestHandler):
+    """ Handles requests coming from form """
+
+    def post(self):
+        #retrieve user input
+        username = self.request.get("username")
+        password = self.request.get("password")
+        verifypassword = self.request.get("verifypassword")
+        email = self.request.get("email")
+
+        #check if username, pw, or verify are left blank.  redirects to form
+        if username == "" or password == "" or verifypassword =="":
+            self.redirect("/")
+
+        self.response.write("<h1> Welcome, " + username + "!")
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', Index),
+    ('/welcome', Welcome)
 ], debug=True)
