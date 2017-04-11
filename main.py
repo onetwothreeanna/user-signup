@@ -138,15 +138,15 @@ class Index(webapp2.RequestHandler):
             error_username= "Please enter a valid username."
             errors = True
 
-        elif password == "" or not password_okay:
+        if password == "" or not password_okay:
             error_password=  "Please enter a valid password."
             errors = True
 
-        elif password != verifypassword:
+        if password != verifypassword:
             error_verify=  "Passwords do not match."
             errors = True
 
-        elif email != "" and not email_okay:
+        if email != "" and not email_okay:
             error_email= "Please enter a valid email address."
             errors = True
 
